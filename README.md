@@ -1,0 +1,2 @@
+# 7th-Eden
+6th Eden got all fucked because I didn't understand OOP - but now I am more acquainted with it. I now know that parent objects can access children, but they should not access grandchildren - instead, they should use their children to access the grandchildren. Also, objects should never access siblings. Lastly, objects generally shouldn't access parents, but their are times when it's acceptable to break this rule (Yousuf said I'll understand when to do so as I get better).
