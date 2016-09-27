@@ -1,0 +1,24 @@
+/*
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+! Still new, so a lot of changes will likely occur 
+! The dead count should reflect the afterworld's denizens count.
+*/
+var multiverseInformation = {
+  edens: {
+    count: 0
+  },
+  cells: {
+    count: 0
+  },
+  entities: {
+    essenceCount: 33, // All entities that have ever existed across worlds and timelines.
+    lostSouls: 255, // The buffer zone: Some entities existed prior to deciding to store them all.
+    
+    // Contains references to all entities, using theirs and their worlds' id numbers as map keys.
+    // Maps are used because they can be iterated through sequentially.
+    living: new Map(),
+    alive: 0,   // How many are alive across worlds at the latest point in their timeline
+    deaths: 0   // How many deaths have occurred across worlds regardless of cause
+  }
+};
