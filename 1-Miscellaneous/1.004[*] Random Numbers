@@ -1,5 +1,3 @@
-var randomNumbersPool = []; // Pool used for all probability calculations.
-
 /*
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 
@@ -18,27 +16,30 @@ approximates a continuous scale rather than a discrete one. However, given the n
 needed to make each Uint32's numbers, the overall number of numbers available is lower because
 there's a limit to the number of bits of entropy available to 'crypto.getRandomValues' per use.
 */
-function generateRandom() {
-  // Generates a new list of 16384 cryptographically secure pseudo random numbers from 0 to 1
-  var randomNumbers = window.crypto.getRandomValues(new Uint32Array(16384));
-  
-  for (var i = 0; i < 16384; i++) {
-    randomNumbersPool[i] = randomNumbers[i] / 4294967295;  // Assigns random numbers between 0 to 1
-  }
-}
 
-/*
-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-
-var num = randomPool.splice(0,1) was chosen over randomPool = randomPool.slice(1) because testing
-showed it to be about thirty times faster with a for loop iterating through an array of size 10000.
-*/
-function getRandom() {
-  if (randomNumbersPool[0] === undefined) {
-    generateRandom();
-  }
+var randomNumbers = {
+  pool: [],
   
-  // Takes index 0 value of the size 1 array that is returned by .splice() 
-  var randomNumber = randomPool.splice(0,1)[0];
-  return randomNumber;
+  getRandomNumber: function() {
+    // If pool is empty, generates a new set of random numbers
+    if (this.pool[0] === undefined) {
+      this.generateRandomNumbers();
+    }
+  
+    // Takes index 0 value of the size 1 array that is returned by .splice()
+    // var num = randomPool.splice(0,1) was chosen over randomPool = randomPool.slice(1) because
+    // testing showed it to be about thirty times faster using a for loop iterating through an array
+    // of size 10000.
+    var number = this.pool.splice(0,1)[0];
+    return number;
+  },
+  
+  generateRandomNumbers: function() {
+    // Generates a new list of 16384 cryptographically secure pseudo random numbers from 0 to 1
+    var newPool = window.crypto.getRandomValues(new Uint32Array(16384));
+  
+    for (var i = 0; i < 16384; i++) {
+      this.pool[i] = newPool[i] / 4294967295;  // Assigns random numbers between 0 to 1
+    }
+  }
 }
