@@ -1,0 +1,99 @@
+/*
+The Math.round function is inadequate as it does not adhere to the scientific rounding practice.
+In the common rounding, which is used by Math.round, a '5' in the digit place to be rounded is
+always rounded up. This leads to rounding a random sample downward 4/9 of the time while rounding
+it upward 5/9 of the time, meaning the average of the values before rounding would be greater than
+the average of the values after rounding.
+Source: http://www.chemteam.info/SigFigs/Rounding.html
+
+The statisticiansRounding static method is one way that yields mostly unbiased rounding.
+*/
+"use strict"
+
+class UnbiasedRounding {
+  constructor(){
+  }
+  
+  static statisticiansRounding(number, roundingDecimalPlace) {
+    // The decimal place being rounded is in the decimal position found from:
+    // Math.pow(10, roundingDecimalPlace)
+    
+    if (typeof(number) !== "number" || typeof(roundingDecimalPlace) !== "number") {
+      console.log("Only arguments of the type 'number' are allowed.");
+      return;
+    }
+    
+    // Shifting the decimal point allows for simpler standardized references to the rounding
+    // digit and its deciding digit within the rounding static methods.
+    number = this.shiftDecimalPoint(number, roundingDecimalPlace); 
+    number = this.roundNumber(number, roundingDecimalPlace);   
+    number = this.shiftDecimalPoint(number, -roundingDecimalPlace);
+    
+    return number;
+  }
+  
+  static shiftDecimalPoint(number, decimalShift) {
+    // The decimalShift is how many times it's shifted right (positive) or left (negative) 
+    
+    if (typeof(number) !== "number" || typeof(decimalShift) !== "number") {
+      console.log("Only arguments of the type 'number' are allowed.");
+      return;
+    }
+    
+    // A floating point rounding error would occur without the if-else, if it were simply:
+    // number * Math.pow(10, decimalShift) 
+    if (decimalShift >= 0) {
+      var shiftedNumber = number * Math.pow(10, decimalShift);
+    }
+    else if (decimalShift < 0) {
+      shiftedNumber = number / Math.pow(10, -decimalShift);
+    }
+    
+    return shiftedNumber;
+  }
+  
+  static roundNumber(number, roundingDecimalPlace) {  
+    if (typeof(number) !== "number" || typeof(roundingDecimalPlace) !== "number") {
+      console.log("Only arguments of the type 'number' are allowed.");
+      return;
+    }
+  
+    var numberString = String(number);
+    var indexOfDecimalPoint = numberString.search("\\.");
+    
+    // If there's no decimal point, then no further calculations are needed: No meaningful digits
+    // exist within the number beyond the digit position that gets rounded.
+    if (indexOfDecimalPoint === -1) {
+      var roundedNumber = number;
+      return roundedNumber;
+    }
+    else if (indexOfDecimalPoint !== -1) {
+      // The roundingDigit is what is rounded, if rounding occurs
+      var roundingDigit = numberString[indexOfDecimalPoint - 1];
+    
+      // The decidingDigit that decides if the roundingDigit is rounded
+      var decidingDigit = numberString[indexOfDecimalPoint + 1];
+      
+      // If the rounding digit is even and the number is positive, then fives round downward
+      // for the rounding digit to remain even.
+      if (roundingDigit % 2 === 0 && number > 0) {
+        number = (decidingDigit <= 5) ? Math.floor(number) : Math.ceil(number);
+      }
+      // If the rounding digit is odd and the number is positive, then fives round upward
+      // for the rounding digit to become even.
+      else if (roundingDigit % 2 !== 0 && number > 0) {
+        number = (decidingDigit <= 4) ? Math.floor(number) : Math.ceil(number);
+      }
+      // Math.ceil and Math.floor flip because the direction reverses with negative numbers
+      else if (roundingDigit % 2 === 0 && number < 0) {
+        number = (decidingDigit <= 5) ? Math.ceil(number) : Math.floor(number);
+      }
+      // Math.ceil and Math.floor flip because the direction reverses with negative numbers
+      else if (roundingDigit % 2 !== 0 && number < 0) {
+        number = (decidingDigit <= 4) ? Math.ceil(number) : Math.floor(number);
+      }
+      
+      return number;
+    }
+  }
+}
