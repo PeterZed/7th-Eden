@@ -1,0 +1,8 @@
+Eden.prototype.assignID = (function() {
+  var idCount = 0;
+  
+  return function() {
+    idCount++;
+    this.id = idCount;
+  }
+})()
